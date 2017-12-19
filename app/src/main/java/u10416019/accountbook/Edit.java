@@ -42,6 +42,8 @@ public class Edit extends AppCompatActivity {
         spinnerFrequency = (Spinner) findViewById(R.id.spinnerFrequency);
         buttonOK = (Button)findViewById(R.id.buttonOK);
 
+        //editTextContent.setText(money);
+
         buttonOK.setOnClickListener(
                 new View.OnClickListener(){
                     @Override

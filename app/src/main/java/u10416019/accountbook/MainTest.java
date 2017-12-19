@@ -7,7 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity {
+public class MainTest extends AppCompatActivity {
 
     private Button button, buttonBack;
     private Intent intent = new Intent();
@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
                 new View.OnClickListener(){
                     @Override
                     public void onClick(View view) {
-                        intent.setClass(MainActivity.this, Edit.class);
+                        intent.setClass(MainTest.this, Edit.class);
                         startActivityForResult(intent,REQUEST_CODE);
                     }
                 });
@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
                 new View.OnClickListener(){
                     @Override
                     public void onClick(View view) {
-                        intent.setClass(MainActivity.this, Edit.class);
+                        intent.setClass(MainTest.this, Edit.class);
                         intent.putExtra("money",money);
                         intent.putExtra("content",content);
                         bundle.putIntArray("radioButtonCheck",radioButtonCheck);
