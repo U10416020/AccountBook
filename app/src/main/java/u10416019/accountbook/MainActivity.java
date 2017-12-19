@@ -1,84 +1,83 @@
 package u10416019.accountbook;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 public class MainActivity extends AppCompatActivity {
-
-    private Button button, buttonBack;
+    private ImageButton btnadd;
+    private LinearLayout linLay;
+    private TextView date;
     private Intent intent = new Intent();
-    private Bundle bundle = new Bundle();
-    private TextView textView4, textView5, textView6;
-    private String money, content;
-    private int[] radioButtonCheck = new int[4];
-    int REQUEST_CODE = 1;
-
+    final Calendar calendar = Calendar.getInstance();
+    SimpleDateFormat dateFormat= new SimpleDateFormat("yyyy-MM-dd");
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        btnadd =(ImageButton)findViewById(R.id.add);
+        linLay = (LinearLayout)findViewById(R.id.linLayout);
+        btnadd.setOnClickListener(addView);
+        date = (TextView)findViewById(R.id.date);
 
-        button = (Button)findViewById(R.id.button);
-        textView4 = (TextView) findViewById(R.id.textView4);
-        textView5 = (TextView) findViewById(R.id.textView5);
-        textView6 = (TextView) findViewById(R.id.textView6);
-        buttonBack = (Button)findViewById(R.id.button2);
+        date.setText(dateFormat.format(calendar.getTime()));
 
-        button.setOnClickListener(
-                new View.OnClickListener(){
-                    @Override
-                    public void onClick(View view) {
-                        intent.setClass(MainActivity.this, Edit.class);
-                        startActivityForResult(intent,REQUEST_CODE);
-                    }
-                });
+        date.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-        buttonBack.setOnClickListener(
-                new View.OnClickListener(){
-                    @Override
-                    public void onClick(View view) {
-                        intent.setClass(MainActivity.this, Edit.class);
-                        intent.putExtra("money",money);
-                        intent.putExtra("content",content);
-                        bundle.putIntArray("radioButtonCheck",radioButtonCheck);
-                        intent.putExtras(bundle);
-                        startActivityForResult(intent,REQUEST_CODE);
-                    }
-                });
+                new DatePickerDialog(MainActivity.this,listener,calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
 
-/*
-        intent = this.getIntent();
-        bundle = this.getIntent().getExtras();
-
-
-        money = intent.getStringExtra("money");
-        content = intent.getStringExtra("content");
-        radioButtonCheck = bundle.getIntArray("radioButtonCheck");
-
-        textView4.setText(money);
-        textView5.setText(content);
-        textView6.setText(radioButtonCheck[0]+radioButtonCheck[1]+radioButtonCheck[2]+radioButtonCheck[3]);*/
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onResume() {
+        super.onResume();
 
-        if(requestCode == REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                bundle = data.getExtras();
-
-                money = data.getStringExtra("money");
-                content = data.getStringExtra("content");
-                radioButtonCheck = bundle.getIntArray("radioButtonCheck");
-
-                textView4.setText(money);
-                textView5.setText(content);
-                textView6.setText(String.valueOf(radioButtonCheck[0])+String.valueOf(radioButtonCheck[1])+String.valueOf(radioButtonCheck[2])+String.valueOf(radioButtonCheck[3]));
-            }
-        }
     }
+
+    private ImageButton.OnClickListener addView= new ImageButton.OnClickListener(){
+        @Override
+        public void onClick(View v) {
+            linLay.addView(new addLinLayout(MainActivity.this));
+        }
+    };
+
+    private DatePickerDialog.OnDateSetListener listener = new DatePickerDialog.OnDateSetListener(){
+
+        @Override
+        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+            calendar.set(Calendar.YEAR,year);
+            calendar.set(Calendar.MONTH,month);
+            calendar.set(Calendar.DAY_OF_MONTH,dayOfMonth);
+            updateDate();
+        }
+    };
+
+    private void updateDate(){
+        date.setText(dateFormat.format(calendar.getTime()));
+    }
+
+    private Button.OnClickListener changeCalendar = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent();
+
+        }
+    };
 }
