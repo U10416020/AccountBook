@@ -3,6 +3,7 @@ package u10416019.accountbook;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -19,24 +20,41 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
+    private final String DATABASE_NAME="accountBook";
+    public final String TABLE_NAME = "ACCOUNT";
+
     private ImageButton btnadd;
     private LinearLayout linLay;
     private TextView date;
     private Intent intent = new Intent();
     final Calendar calendar = Calendar.getInstance();
     SimpleDateFormat dateFormat= new SimpleDateFormat("yyyy-MM-dd");
+
     public String abc;
+    public int layoutId;
+
+    GlobalVariable gv;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        gv = (GlobalVariable)getApplicationContext();
+        //gv = new GlobalVariable();
+        layoutId = gv.getLayoutId();
+/*
+        //MyDatabase myDBHelper = new MyDatabase(this, DATABASE_NAME, null, 3);
+        MyDataBase myDBHelper = new MyDataBase(this,DATABASE_NAME,null,1);
+        SQLiteDatabase db = myDBHelper.getWritableDatabase();
+        String cmd = "SELECT * FROM "+TABLE_NAME+";";
+*/
         btnadd =(ImageButton)findViewById(R.id.add);
         linLay = (LinearLayout)findViewById(R.id.linLayout);
         btnadd.setOnClickListener(addView);
         date = (TextView)findViewById(R.id.date);
 
         date.setText(dateFormat.format(calendar.getTime()));
-
+        gv.setDate(dateFormat.format(calendar.getTime()));
         date.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -44,6 +62,10 @@ public class MainActivity extends AppCompatActivity {
                 new DatePickerDialog(MainActivity.this,listener,calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH)).show();
             }
         });
+
+        //if(layoutId == 0){
+            //linLay.addView(new addLinLayout(MainActivity.this,gv.getMoney(),gv.getContent(),gv.getTypeItem()));
+       // }
 
     }
 
@@ -58,12 +80,13 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View v) {
             Intent intent = new Intent();
             intent.setClass(MainActivity.this,Edit.class);
-            //startActivity(intent);
-            startActivityForResult(intent,1);
-            //linLay.addView(new addLinLayout(MainActivity.this));
+            reset();
+            startActivity(intent);
+            //startActivityForResult(intent,1);
+            //linLay.addView(new addLinLayout(MainActivity.this,"1111","asdf","1"));
         }
     };
-
+/*
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -84,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
-
+*/
     private DatePickerDialog.OnDateSetListener listener = new DatePickerDialog.OnDateSetListener(){
 
         @Override
@@ -97,14 +120,24 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private void updateDate(){
+
         date.setText(dateFormat.format(calendar.getTime()));
+        gv.setDate(dateFormat.format(calendar.getTime()));
     }
 
     private Button.OnClickListener changeCalendar = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             Intent intent = new Intent();
-
         }
     };
+
+    public void reset(){
+        gv.setMoney("");
+        gv.setContent("");
+        gv.setRadioButtonCheck(new int[4]);
+        gv.setTypeItem("");
+        gv.setFrequencyItem("");
+        gv.setLayoutId(0);
+    }
 }

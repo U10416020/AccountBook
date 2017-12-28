@@ -110,14 +110,14 @@ public class addLinLayout extends LinearLayout {
         public void onClick(View V){
             Intent intent = new Intent();
             intent.setClass(getContext,Edit.class);
-
+/*
             bundle.putString("content",content);
             bundle.putString("money",money);
             bundle.putString("typeItem",typeItem);
             bundle.putInt("layoutId",newLayout.getId());
             //intent.putExtras("bundle",bundle);
             intent.putExtra("bundle",bundle);
-
+*/
             getContext.startActivity(intent);
             //startActionMode();
         }
