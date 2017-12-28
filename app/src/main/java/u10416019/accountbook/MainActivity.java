@@ -11,6 +11,7 @@ import android.widget.DatePicker;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
@@ -54,9 +55,34 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton.OnClickListener addView= new ImageButton.OnClickListener(){
         @Override
         public void onClick(View v) {
-            linLay.addView(new addLinLayout(MainActivity.this));
+            Intent intent = new Intent();
+            intent.setClass(MainActivity.this,Edit.class);
+            //startActivity(intent);
+            startActivityForResult(intent,1);
+            //linLay.addView(new addLinLayout(MainActivity.this));
         }
     };
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            Bundle bundleResult = data.getExtras();
+            Toast.makeText(MainActivity.this, "選擇項目:"+bundleResult.getString("typeItem"),
+                    Toast.LENGTH_LONG).show();
+
+            String money = bundleResult.getString("money");
+            String content = bundleResult.getString("content");
+            String typeItem = bundleResult.getString("typeItem");
+            linLay.addView(new addLinLayout(MainActivity.this,money,content,typeItem));
+        }
+        else if(resultCode==3){
+            Bundle bundleResult = data.getExtras();
+            Toast.makeText(MainActivity.this, "layoutID:"+bundleResult.getInt("layoutId"),
+                    Toast.LENGTH_LONG).show();
+
+        }
+    }
 
     private DatePickerDialog.OnDateSetListener listener = new DatePickerDialog.OnDateSetListener(){
 

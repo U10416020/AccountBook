@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">AccountBook</string>
+    <string-array name="frequency_item">
+        <item>無</item>
+        <item>每週一次</item>
+        <item>每兩週一次</item>
+        <item>每月一次</item>
+    </string-array>
+
+    <string-array name="type_item">
+        <item>早餐</item>
+        <item>午餐</item>
+        <item>餐</item>
+        <item>交通</item>
+    </string-array>
 </resources>
