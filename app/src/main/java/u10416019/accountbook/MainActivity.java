@@ -26,10 +26,19 @@ public class MainActivity extends AppCompatActivity {
     final Calendar calendar = Calendar.getInstance();
     SimpleDateFormat dateFormat= new SimpleDateFormat("yyyy-MM-dd");
     public String abc;
+    public int layoutId;
+
+    GlobalVariable gv;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        gv = (GlobalVariable)getApplicationContext();
+        //gv = new GlobalVariable();
+        layoutId = gv.getLayoutId();
+
         btnadd =(ImageButton)findViewById(R.id.add);
         linLay = (LinearLayout)findViewById(R.id.linLayout);
         btnadd.setOnClickListener(addView);
@@ -45,6 +54,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        if(layoutId == 0){
+            linLay.addView(new addLinLayout(MainActivity.this,gv.getMoney(),gv.getContent(),gv.getTypeItem()));
+        }
+
     }
 
     @Override
@@ -58,12 +71,14 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View v) {
             Intent intent = new Intent();
             intent.setClass(MainActivity.this,Edit.class);
-            //startActivity(intent);
-            startActivityForResult(intent,1);
+            reset();
+            startActivity(intent);
+            //startActivityForResult(intent,1);
             //linLay.addView(new addLinLayout(MainActivity.this));
         }
     };
 
+    /*
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -84,6 +99,8 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
+    */
+
 
     private DatePickerDialog.OnDateSetListener listener = new DatePickerDialog.OnDateSetListener(){
 
@@ -107,4 +124,13 @@ public class MainActivity extends AppCompatActivity {
 
         }
     };
+
+    public void reset(){
+        gv.setMoney("");
+        gv.setContent("");
+        gv.setRadioButtonCheck(new int[4]);
+        gv.setTypeItem("");
+        gv.setFrequencyItem("");
+        gv.setLayoutId(0);
+    }
 }
