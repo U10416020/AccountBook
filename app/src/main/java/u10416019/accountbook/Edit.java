@@ -109,7 +109,7 @@ public class Edit extends AppCompatActivity {
                 new View.OnClickListener(){
                     @Override
                     public void onClick(View view) {
-                        /*
+
                         intent.setClass(Edit.this, MainActivity.class);
                         checkRadioButton();
                         //intent.putExtra("money",editTextMoney.getText().toString());
@@ -130,7 +130,7 @@ public class Edit extends AppCompatActivity {
                         }
 
                         finish();
-                        */
+
                     }
                 });
 

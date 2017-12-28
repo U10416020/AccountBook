@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private Intent intent = new Intent();
     final Calendar calendar = Calendar.getInstance();
     SimpleDateFormat dateFormat= new SimpleDateFormat("yyyy-MM-dd");
+    public String abc;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

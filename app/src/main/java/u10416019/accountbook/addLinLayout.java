@@ -27,6 +27,7 @@ public class addLinLayout extends LinearLayout {
     String money,content,typeItem;
     Bundle bundle = new Bundle();
     int layoutNumber=0;
+    public String abc;
     public addLinLayout(Context context,String money,String content,String typeItem) {
         super(context);
         getContext=context;

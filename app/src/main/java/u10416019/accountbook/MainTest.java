@@ -16,6 +16,7 @@ public class MainTest extends AppCompatActivity {
     private String money, content;
     private int[] radioButtonCheck = new int[4];
     int REQUEST_CODE = 1;
+    public String abc;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
