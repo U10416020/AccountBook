@@ -8,6 +8,8 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -28,6 +30,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Edit extends AppCompatActivity {
+
     private final String DATABASE_NAME="accountBook";
     public final String TABLE_NAME = "ACCOUNT";
 
@@ -39,10 +42,14 @@ public class Edit extends AppCompatActivity {
     private Intent intent = new Intent();
     private Bundle bundle = new Bundle();
     private int[] radioButtonCheck = new int[4];
+
+
+    //private int resultCode = 1;
+
     private String money, content,date;
 
     private String frequencyItem = "";
-    //private int resultCode = 1;
+
     private String[] item = {"無","每週一次","每兩週一次","每月一次"};
     private List<String> allType;
     private String[] getType;
@@ -53,19 +60,30 @@ public class Edit extends AppCompatActivity {
     private int layoutId;
 
     private MyDataBase helper;
+    public static SQLiteDatabase database;
 
-
+    public long id=0;
 
     GlobalVariable gv;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.edit);
         intent=this.getIntent();
+
         gv = (GlobalVariable)getApplicationContext();
-        helper = new MyDataBase(this,DATABASE_NAME,null,1);
+        //helper = new MyDataBase(this,DATABASE_NAME,null,1);
+        helper = MyDataBase.getInstance(this);
+        database=helper.getWritableDatabase();
         //gv = new GlobalVariable();
         //getIntent = this.getIntent();
+
+
+        //gv = (GlobalVariable)getApplicationContext();
+        //gv = new GlobalVariable();
+
+
         editTextMoney = (EditText)findViewById(R.id.editTextMoney);
         editTextContent = (EditText)findViewById(R.id.editTextContent);
         radioButtonIncome = (RadioButton)findViewById(R.id.radioButtonIncome);
@@ -76,8 +94,8 @@ public class Edit extends AppCompatActivity {
         spinnerFrequency = (Spinner) findViewById(R.id.spinnerFrequency);
         buttonOK = (Button)findViewById(R.id.buttonOK);
 
-        //radioButtonNecessity.setVisibility(View.GONE);
-        //radioButtonNonNecessity.setVisibility(View.GONE);
+        radioButtonNecessity.setVisibility(View.GONE);
+        radioButtonNonNecessity.setVisibility(View.GONE);
 
 /*
         if(intent.hasExtra("bundle")){
@@ -121,13 +139,50 @@ public class Edit extends AppCompatActivity {
 
         spinnerType.setOnItemSelectedListener(typeItemSelect);
 
+        if(intent.hasExtra("id")){
+            id = intent.getLongExtra("id",-1);
+            String cmd = "select * from "+TABLE_NAME+" where _id = "+id+" ;";
+            Cursor result = database.rawQuery(cmd,null);
+            if( result != null && result.moveToFirst() ){
+                id=result.getLong(0);
+                date = result.getString(1);
+                money = result.getString(2);
+                radioButtonCheck[0] = result.getInt(3);
+                radioButtonCheck[2]=result.getInt(4);
+                typeItem=result.getString(5);
+                content=result.getString(6);
+                frequencyItem=result.getString(7);
+
+                editTextMoney.setText(money);
+                spinnerType.setSelection(allType.indexOf(typeItem));
+                spinnerFrequency.setSelection(Arrays.asList(item).indexOf(frequencyItem));
+                editTextContent.setText(content);
+
+                result.close();
+            }
+            if(radioButtonCheck[0]==1)
+                radioButtonCheck[1]=0;
+            else if(radioButtonCheck[0]==0)
+                radioButtonCheck[1]=1;
+            if(radioButtonCheck[2]==1)
+                radioButtonCheck[3]=0;
+            if(radioButtonCheck[3]==1)
+                radioButtonCheck[2]=0;
+            setRadioButton();
+        }
+
+
+
+
         getGlobalVariable();
-        setNumber();
+        //setNumber();
+
 
         buttonOK.setOnClickListener(
                 new View.OnClickListener(){
                     @Override
                     public void onClick(View view) {
+
 /*
                         intent.setClass(Edit.this, MainActivity.class);
                         checkRadioButton();
@@ -137,6 +192,7 @@ public class Edit extends AppCompatActivity {
                         bundle.putString("content",editTextContent.getText().toString());
                         bundle.putString("money",editTextMoney.getText().toString());
                         bundle.putString("typeItem",typeItem);
+                        /*
                         if(editData==false){
                             intent.putExtras(bundle);
                             setResult(RESULT_OK, intent);
@@ -147,11 +203,11 @@ public class Edit extends AppCompatActivity {
                             setResult(3,intent);
                         }
 */
-                        sendData();
+
                         intent.setClass(Edit.this, MainActivity.class);
                         setGlobalVariable();
+                        sendData();
                         startActivity(intent);
-
 
                     }
                 });
@@ -173,7 +229,6 @@ public class Edit extends AppCompatActivity {
                         radioButtonNonNecessity.setVisibility(View.GONE);
                     }
                 });
-
     }
 
     //Send data to DataBase named ACCOUNTBOOK
@@ -187,17 +242,16 @@ public class Edit extends AppCompatActivity {
             necessary=1;
         else if(radioButtonCheck[2]==0&&radioButtonCheck[3]==1)
             necessary=0;
-        ContentValues values = new ContentValues();
-        values.put("DATE",date);
-        values.put("MONEY",money);
-        values.put("INCOME",income);
-        values.put("NECESSARY",necessary);
-        values.put("TYPE",typeItem);
-        values.put("CONTENT",content);
-        values.put("FREQUENCY",frequencyItem);
 
-        long id = helper.getWritableDatabase().insert(TABLE_NAME, null, values);
+        //if(id==0){
+        long id = helper.insert(date,money,income,necessary,typeItem,content,frequencyItem);
         Log.d("ADD", id+"");
+        intent.putExtra("ID",id);
+        //}
+        //else{
+        helper.update(id);
+        //}
+
     }
     //Set Radio Button
     public void checkRadioButton(){
@@ -212,9 +266,17 @@ public class Edit extends AppCompatActivity {
     }
 
     public void setRadioButton(){
-        if(radioButtonCheck[0] == 1) radioButtonIncome.setChecked(true);
+        if(radioButtonCheck[0] == 1) {
+            radioButtonIncome.setChecked(true);
+            radioButtonNecessity.setVisibility(View.GONE);
+            radioButtonNonNecessity.setVisibility(View.GONE);
+        }
         else radioButtonIncome.setChecked(false);
-        if(radioButtonCheck[1] == 1) radioButtonExpense.setChecked(true);
+        if(radioButtonCheck[1] == 1) {
+            radioButtonExpense.setChecked(true);
+            radioButtonNecessity.setVisibility(View.VISIBLE);
+            radioButtonNonNecessity.setVisibility(View.VISIBLE);
+        }
         else radioButtonExpense.setChecked(false);
         if(radioButtonCheck[2] == 1) radioButtonNecessity.setChecked(true);
         else radioButtonNecessity.setChecked(false);
@@ -233,6 +295,7 @@ public class Edit extends AppCompatActivity {
         gv.setTypeItem(typeItem);
         gv.setFrequencyItem(frequencyItem);
         gv.setLayoutId(layoutId);
+
     }
 
     public void getGlobalVariable(){
@@ -242,6 +305,7 @@ public class Edit extends AppCompatActivity {
         typeItem = gv.getTypeItem();
         frequencyItem = gv.getFrequencyItem();
         layoutId = gv.getLayoutId();
+
         date = gv.getDate();
     }
 
@@ -309,8 +373,10 @@ public class Edit extends AppCompatActivity {
             }
             else{
                 typeItem=allType.get(position).toString();
+
                 //Toast.makeText(Edit.this, "選擇項目:"+typeItem,
                 //Toast.LENGTH_LONG).show();
+
             }
 
         }
