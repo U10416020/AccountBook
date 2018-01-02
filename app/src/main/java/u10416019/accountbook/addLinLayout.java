@@ -52,7 +52,6 @@ public class addLinLayout extends LinearLayout {
         //newLayout.setPadding(8,10,5,10);
         newLayout.setOrientation(LinearLayout.HORIZONTAL);
 
-        //newLayout.setId(layoutNumber);
         star = new ImageView(context);
         if(necessary==0)
             star.setImageResource(btn_star_big_off);
@@ -63,13 +62,11 @@ public class addLinLayout extends LinearLayout {
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(100, 80,0.3f);
         lp.setMargins(20,0,5,0);
         star.setLayoutParams(lp);
-        //star.setLayoutParams(new LinearLayout.LayoutParams(50,30));
 
 
         viewKind = new TextView(context);
         viewKind.setTextSize(20);
         viewKind.setText(typeItem);
-        //viewKind.setText("交通");
         viewKind.setGravity(1);
         LinearLayout.LayoutParams lp1 = new LinearLayout.LayoutParams(75, LinearLayout.LayoutParams.WRAP_CONTENT,0.44f);
         lp1.setMargins(15,0,8,0);
@@ -78,7 +75,6 @@ public class addLinLayout extends LinearLayout {
         viewContent = new TextView(context);
         viewContent.setTextSize(20);
         viewContent.setText(content);
-        //viewContent.setText("搭公車搭公車搭公車搭公車搭公車搭公車");
         //viewContent.setGravity(1);
         LinearLayout.LayoutParams lp2 = new LinearLayout.LayoutParams(150, LinearLayout.LayoutParams.WRAP_CONTENT,0.70f);
         lp2.setMargins(15,0,8,0);
@@ -97,7 +93,7 @@ public class addLinLayout extends LinearLayout {
             viewMoney.setText("+"+money);
             viewMoney.setTextColor(getResources().getColor(R.color.green));
         }
-        //viewMoney.setText("-24");
+
         viewMoney.setGravity(1);
         LinearLayout.LayoutParams lp3 = new LinearLayout.LayoutParams(50, LinearLayout.LayoutParams.WRAP_CONTENT,0.56f);
         lp3.setMargins(15,0,8,0);
@@ -109,7 +105,6 @@ public class addLinLayout extends LinearLayout {
         lp4.setMargins(0,0,8,0);
         imageButton.setLayoutParams(lp4);
         imageButton.setOnClickListener(imgBtn);
-
 
         newLayout.addView(star);
         newLayout.addView(viewKind);
@@ -134,16 +129,8 @@ public class addLinLayout extends LinearLayout {
             Intent intent = new Intent();
             intent.setClass(getContext,Edit.class);
             intent.putExtra("id",id);
-/*
-            bundle.putString("content",content);
-            bundle.putString("money",money);
-            bundle.putString("typeItem",typeItem);
-            bundle.putInt("layoutId",newLayout.getId());
-            //intent.putExtras("bundle",bundle);
-            intent.putExtra("bundle",bundle);
-*/
+
             getContext.startActivity(intent);
-            //startActionMode();
         }
     };
 

@@ -45,7 +45,6 @@ public class MyDataBase extends SQLiteOpenHelper {
         if (database == null || !database.isOpen()) {
             database = instance.getWritableDatabase();
         }
-
         return database;
     }
 
@@ -78,8 +77,17 @@ public class MyDataBase extends SQLiteOpenHelper {
         return this.getWritableDatabase().insert(TABLE_NAME, null, values);
     }
 
-    public void update(long id){
+    public void update(long id,String date,String money,int income, int necessary, String typeItem,String content, String frequencyItem){
+        ContentValues values = new ContentValues();
+        values.put("DATE",date);
+        values.put("MONEY",money);
+        values.put("INCOME",income);
+        values.put("NECESSARY",necessary);
+        values.put("TYPE",typeItem);
+        values.put("CONTENT",content);
+        values.put("FREQUENCY",frequencyItem);
 
+        this.getWritableDatabase().update(TABLE_NAME,values,KEY_ID+" = "+id,null);
     }
 
 
@@ -87,6 +95,4 @@ public class MyDataBase extends SQLiteOpenHelper {
         String where = KEY_ID+" = "+id;
         database.delete(TABLE_NAME,where,null);
     }
-
-
 }
