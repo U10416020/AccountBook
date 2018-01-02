@@ -3,7 +3,9 @@ package u10416019.accountbook;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -20,9 +22,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
-    private final String DATABASE_NAME="accountBook";
-    public final String TABLE_NAME = "ACCOUNT";
-
     private ImageButton btnadd;
     private LinearLayout linLay;
     private TextView date;
@@ -33,21 +32,29 @@ public class MainActivity extends AppCompatActivity {
     public String abc;
     public int layoutId;
 
+    public final String TABLE_NAME = "ACCOUNT";
+
     GlobalVariable gv;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        //intent=this.getIntent();
         gv = (GlobalVariable)getApplicationContext();
         //gv = new GlobalVariable();
         layoutId = gv.getLayoutId();
+
+
 /*
-        //MyDatabase myDBHelper = new MyDatabase(this, DATABASE_NAME, null, 3);
-        MyDataBase myDBHelper = new MyDataBase(this,DATABASE_NAME,null,1);
-        SQLiteDatabase db = myDBHelper.getWritableDatabase();
-        String cmd = "SELECT * FROM "+TABLE_NAME+";";
-*/
+        Cursor result = db.rawQuery(cmd,null);
+        result.moveToNext();
+        for(int i = 0;i<result.getColumnCount();i++){
+            String data = result.getString(i);
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage(data);
+            builder.show();
+        }
+        */
         btnadd =(ImageButton)findViewById(R.id.add);
         linLay = (LinearLayout)findViewById(R.id.linLayout);
         btnadd.setOnClickListener(addView);
@@ -66,6 +73,24 @@ public class MainActivity extends AppCompatActivity {
         //if(layoutId == 0){
             //linLay.addView(new addLinLayout(MainActivity.this,gv.getMoney(),gv.getContent(),gv.getTypeItem()));
        // }
+
+        //MyDatabase myDBHelper = new MyDatabase(this, DATABASE_NAME, null, 3);
+        MyDataBase myDBHelper = MyDataBase.getInstance(this);
+        SQLiteDatabase db = myDBHelper.getWritableDatabase();
+        String cmd = "SELECT * FROM "+TABLE_NAME+";";
+        Cursor result = db.query(TABLE_NAME,null,null,null,null,null,null,null);
+        for(int i = 0;i<result.getCount();i++){
+            result.moveToPosition(i);
+            long id = result.getLong(0);
+            String date = result.getString(1);
+            String money = result.getString(2);
+            int income = result.getInt(3);
+            int necessary = result.getInt(4);
+            String type = result.getString(5);
+            String content = result.getString(6);
+            String frequency = result.getString(7);
+            linLay.addView(new addLinLayout(MainActivity.this,money,content,type,id,income,necessary,myDBHelper));
+        }
 
     }
 
