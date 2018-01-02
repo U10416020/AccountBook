@@ -17,7 +17,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -49,16 +48,22 @@ public class MainActivity extends AppCompatActivity {
         linLay = (LinearLayout)findViewById(R.id.linLayout);
         btnadd.setOnClickListener(addView);
         date = (TextView)findViewById(R.id.date);
+        intent=this.getIntent();
+        if(intent.hasExtra("date")){
+            date.setText(intent.getStringExtra("date"));
+            gv.setDate(date.getText().toString());
+        }
+        else{
+            date.setText(dateFormat.format(calendar.getTime()));
+            gv.setDate(dateFormat.format(calendar.getTime()));
+        }
 
-        date.setText(dateFormat.format(calendar.getTime()));
-        gv.setDate(dateFormat.format(calendar.getTime()));
         date.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 new DatePickerDialog(MainActivity.this,listener,calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH)).show();
             }
         });
-
         changeLinearLayout();
     }
 
@@ -89,18 +94,19 @@ public class MainActivity extends AppCompatActivity {
         changeLinearLayout();
     }
 
-    //Clean linear layout and get database to new linear layout
+    //Clean linear layout and get database to new linear layout. And get total.
     private void changeLinearLayout(){
         linLay.removeAllViews();
         MyDataBase myDBHelper = MyDataBase.getInstance(this);
         SQLiteDatabase db = myDBHelper.getWritableDatabase();
-        String cmd = "SELECT * FROM "+TABLE_NAME+" WHERE DATE = \""+dateFormat.format(calendar.getTime())+"\";";
+        String cmd = "SELECT * FROM "+TABLE_NAME+" WHERE DATE = \""+date.getText().toString()+"\";";
         Cursor result = db.rawQuery(cmd,null);
         result.moveToFirst();
+        String date="";
         if(result.moveToFirst()){
             do{
                 long id = result.getLong(0);
-                String date = result.getString(1);
+                date = result.getString(1);
                 String money = result.getString(2);
                 int income = result.getInt(3);
                 int necessary = result.getInt(4);
@@ -111,6 +117,8 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("ID",id+"+DATE="+date);
             }while(result.moveToNext());
         }
+        int total = myDBHelper.getMonthTotal(date);
+        Log.d("TOTAL",total+"");
     }
 
     private Button.OnClickListener changeCalendar = new View.OnClickListener() {

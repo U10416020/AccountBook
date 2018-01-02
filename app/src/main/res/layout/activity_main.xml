@@ -7,7 +7,7 @@
     tools:context="u10416019.accountbook.MainActivity">
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
@@ -16,13 +16,14 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:id="@+id/linearLayout2">
+        android:id="@+id/linearLayout2"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp">
 
         <Button
             android:id="@+id/button"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
-
             android:layout_marginTop="8dp"
             android:layout_weight="1"
             android:text="月曆" />
@@ -31,10 +32,11 @@
             android:id="@+id/date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0.5"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginTop="12dp"
+            android:layout_weight="0.5"
+            android:gravity="center"
             android:text="2017-12-19"
             android:textSize="30sp" />
 
@@ -42,7 +44,6 @@
             android:id="@+id/button2"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
-
             android:layout_marginTop="8dp"
             android:layout_weight="1"
             android:text="紀錄" />
@@ -73,7 +74,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
-                android:layout_weight="0.1"
+                android:layout_weight="0.3"
                 android:gravity="center"
                 android:text="必需"
                 android:textSize="24sp" />

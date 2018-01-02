@@ -75,12 +75,10 @@ public class addLinLayout extends LinearLayout {
         viewContent = new TextView(context);
         viewContent.setTextSize(20);
         viewContent.setText(content);
-        //viewContent.setGravity(1);
+
         LinearLayout.LayoutParams lp2 = new LinearLayout.LayoutParams(150, LinearLayout.LayoutParams.WRAP_CONTENT,0.70f);
         lp2.setMargins(15,0,8,0);
         viewContent.setLayoutParams(lp2);
-
-
 
         viewMoney = new TextView(context);
         viewMoney.setTextSize(20);

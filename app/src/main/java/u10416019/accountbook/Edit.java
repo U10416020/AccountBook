@@ -159,6 +159,7 @@ public class Edit extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         intent.setClass(Edit.this, MainActivity.class);
+                        intent.putExtra("date",date);
                         setGlobalVariable();
                         sendData();
                         startActivity(intent);
