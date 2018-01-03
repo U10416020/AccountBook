@@ -107,9 +107,10 @@
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
         android:layout_weight="1"
+        android:contentDescription="內容"
         android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Name"
+        android:hint="內容"
+        android:inputType="textLongMessage"
         android:textSize="20sp" />
 
     <TextView
