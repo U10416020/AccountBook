@@ -23,6 +23,7 @@ import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
     private ImageButton btnadd;
+    private Button record;
     private LinearLayout linLay;
     private TextView date;
     private Intent intent = new Intent();
@@ -45,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
         layoutId = gv.getLayoutId();
 
         btnadd =(ImageButton)findViewById(R.id.add);
+        record = (Button)findViewById(R.id.button2);
         linLay = (LinearLayout)findViewById(R.id.linLayout);
         btnadd.setOnClickListener(addView);
         date = (TextView)findViewById(R.id.date);
@@ -62,6 +64,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 new DatePickerDialog(MainActivity.this,listener,calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+
+        record.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                intent.setClass(MainActivity.this,Record.class);
+                startActivity(intent);
             }
         });
         changeLinearLayout();
