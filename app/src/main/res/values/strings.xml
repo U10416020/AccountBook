@@ -14,4 +14,6 @@
         <item>交通</item>
         <item>abc</item>
     </string-array>
+    <string name="action_menu1">日曆</string>
+    <string name="action_menu2">月曆</string>
 </resources>

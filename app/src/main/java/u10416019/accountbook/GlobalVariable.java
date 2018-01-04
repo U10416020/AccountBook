@@ -37,8 +37,6 @@ public class GlobalVariable extends Application {
     }
     public void setDate(String date){this.date=date;}
 
-
-
     public String getMoney() {
         return money;
     }

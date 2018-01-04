@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -16,7 +17,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -24,6 +24,7 @@ import java.util.Calendar;
 public class MainActivity extends AppCompatActivity {
     private ImageButton btnadd;
     private Button buttonCalendar;
+    private Button record;
     private LinearLayout linLay;
     private TextView date;
     private Intent intent = new Intent();
@@ -40,9 +41,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //intent=this.getIntent();
         gv = (GlobalVariable)getApplicationContext();
-        //gv = new GlobalVariable();
         layoutId = gv.getLayoutId();
 
 
@@ -57,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
         }
         */
         btnadd =(ImageButton)findViewById(R.id.add);
+        record = (Button)findViewById(R.id.button2);
         linLay = (LinearLayout)findViewById(R.id.linLayout);
         btnadd.setOnClickListener(addView);
         date = (TextView)findViewById(R.id.date);
@@ -64,10 +64,20 @@ public class MainActivity extends AppCompatActivity {
 
         date.setText(dateFormat.format(calendar.getTime()));
         gv.setDate(dateFormat.format(calendar.getTime()));
+
+        intent=this.getIntent();
+        if(intent.hasExtra("date")){
+            date.setText(intent.getStringExtra("date"));
+            gv.setDate(date.getText().toString());
+        }
+        else{
+            date.setText(dateFormat.format(calendar.getTime()));
+            gv.setDate(dateFormat.format(calendar.getTime()));
+        }
+
         date.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 new DatePickerDialog(MainActivity.this,listener,calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH)).show();
             }
         });
@@ -76,10 +86,20 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent();
-                intent.setClass(MainActivity.this, u10416019.accountbook.Calendar.class);
+                intent.setClass(MainActivity.this, CalendarClass.class);
+                intent.putExtra("send_date",dateFormat.format(calendar.getTime()));
                 startActivity(intent);
             }
         });
+
+        record.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                intent.setClass(MainActivity.this,Record.class);
+                startActivity(intent);
+            }
+        });
+        changeLinearLayout();
 
         //if(layoutId == 0){
         //linLay.addView(new addLinLayout(MainActivity.this,gv.getMoney(),gv.getContent(),gv.getTypeItem()));
@@ -105,12 +125,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-    }
-
     private ImageButton.OnClickListener addView= new ImageButton.OnClickListener(){
         @Override
         public void onClick(View v) {
@@ -122,26 +136,8 @@ public class MainActivity extends AppCompatActivity {
             //linLay.addView(new addLinLayout(MainActivity.this,"1111","asdf","1"));
         }
     };
-    /*
-        @Override
-        protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-            super.onActivityResult(requestCode, resultCode, data);
-            if (resultCode == RESULT_OK) {
-                Bundle bundleResult = data.getExtras();
-                Toast.makeText(MainActivity.this, "選擇項目:"+bundleResult.getString("typeItem"),
-                        Toast.LENGTH_LONG).show();
-                String money = bundleResult.getString("money");
-                String content = bundleResult.getString("content");
-                String typeItem = bundleResult.getString("typeItem");
-                linLay.addView(new addLinLayout(MainActivity.this,money,content,typeItem));
-            }
-            else if(resultCode==3){
-                Bundle bundleResult = data.getExtras();
-                Toast.makeText(MainActivity.this, "layoutID:"+bundleResult.getInt("layoutId"),
-                        Toast.LENGTH_LONG).show();
-            }
-        }
-    */
+
+
     private DatePickerDialog.OnDateSetListener listener = new DatePickerDialog.OnDateSetListener(){
 
         @Override
@@ -157,6 +153,34 @@ public class MainActivity extends AppCompatActivity {
 
         date.setText(dateFormat.format(calendar.getTime()));
         gv.setDate(dateFormat.format(calendar.getTime()));
+        changeLinearLayout();
+    }
+
+    //Clean linear layout and get database to new linear layout. And get total.
+    private void changeLinearLayout(){
+        linLay.removeAllViews();
+        MyDataBase myDBHelper = MyDataBase.getInstance(this);
+        SQLiteDatabase db = myDBHelper.getWritableDatabase();
+        String cmd = "SELECT * FROM "+TABLE_NAME+" WHERE DATE = \""+date.getText().toString()+"\";";
+        Cursor result = db.rawQuery(cmd,null);
+        result.moveToFirst();
+        String date="";
+        if(result.moveToFirst()){
+            do{
+                long id = result.getLong(0);
+                date = result.getString(1);
+                String money = result.getString(2);
+                int income = result.getInt(3);
+                int necessary = result.getInt(4);
+                String type = result.getString(5);
+                String content = result.getString(6);
+                String frequency = result.getString(7);
+                linLay.addView(new addLinLayout(MainActivity.this,money,content,type,id,income,necessary,myDBHelper));
+                Log.d("ID",id+"+DATE="+date);
+            }while(result.moveToNext());
+        }
+        //int total = myDBHelper.getMonthTotal(date);
+        //Log.d("TOTAL",total+"");
     }
 
     private Button.OnClickListener changeCalendar = new View.OnClickListener() {

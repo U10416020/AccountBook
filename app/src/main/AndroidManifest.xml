@@ -19,8 +19,19 @@
         </activity>
         <activity android:label="Edit" android:name=".Edit"
             android:windowSoftInputMode="adjustPan"/>
-        <activity android:label="Calendar" android:name=".Calendar"
+        <activity android:label="CalendarClass" android:name=".CalendarClass"
             android:windowSoftInputMode="adjustPan"/>
+
+        <activity android:label="Record" android:name=".Record"
+            android:windowSoftInputMode="adjustPan"
+            android:theme="@style/Test">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>

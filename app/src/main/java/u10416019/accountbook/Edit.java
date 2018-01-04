@@ -42,12 +42,7 @@ public class Edit extends AppCompatActivity {
     private Intent intent = new Intent();
     private Bundle bundle = new Bundle();
     private int[] radioButtonCheck = new int[4];
-
-
-    //private int resultCode = 1;
-
     private String money, content,date;
-
     private String frequencyItem = "";
 
     private String[] item = {"無","每週一次","每兩週一次","每月一次"};
@@ -76,12 +71,6 @@ public class Edit extends AppCompatActivity {
         //helper = new MyDataBase(this,DATABASE_NAME,null,1);
         helper = MyDataBase.getInstance(this);
         database=helper.getWritableDatabase();
-        //gv = new GlobalVariable();
-        //getIntent = this.getIntent();
-
-
-        //gv = (GlobalVariable)getApplicationContext();
-        //gv = new GlobalVariable();
 
 
         editTextMoney = (EditText)findViewById(R.id.editTextMoney);
@@ -96,22 +85,6 @@ public class Edit extends AppCompatActivity {
 
         radioButtonNecessity.setVisibility(View.GONE);
         radioButtonNonNecessity.setVisibility(View.GONE);
-
-/*
-        if(intent.hasExtra("bundle")){
-            Bundle getBundle = intent.getExtras();
-            String money = getBundle.getString("money");
-            String content = getBundle.getString("content");
-            String typeItem = getBundle.getString("typeItem");
-            layoutId = getBundle.getInt("layoutId");
-            editTextMoney.setText(money);
-            editTextContent.setText(content);
-            //spinnerType.setSelection(allType.indexOf(typeItem));
-            editData=true;
-        }
-        //if(bundle!=null){
-        //}
-*/
         //ArrayAdapter<CharSequence> arrAdapter = ArrayAdapter.createFromResource(Edit.this,item,Spinner.MODE_DIALOG);
         spinnerFrequency.setOnItemSelectedListener(itemselect);
         //editTextContent.setText(money);
@@ -119,7 +92,7 @@ public class Edit extends AppCompatActivity {
         //The items of spinnerType.
         allType = new ArrayList<String>();
 
-
+        //Shared preferences get type item
         SharedPreferences prefGet = getSharedPreferences("typeItem",MODE_PRIVATE);
         String typeString = prefGet.getString("item",type);
         getType = typeString.split(",");
@@ -136,7 +109,6 @@ public class Edit extends AppCompatActivity {
         typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerType.setAdapter(typeAdapter);
         //spinnerType.setOnItemSelectedListener(itemselect);
-
         spinnerType.setOnItemSelectedListener(typeItemSelect);
 
         if(intent.hasExtra("id")){
@@ -157,7 +129,7 @@ public class Edit extends AppCompatActivity {
                 spinnerType.setSelection(allType.indexOf(typeItem));
                 spinnerFrequency.setSelection(Arrays.asList(item).indexOf(frequencyItem));
                 editTextContent.setText(content);
-
+                Log.d("DATE", date);
                 result.close();
             }
             if(radioButtonCheck[0]==1)
@@ -170,45 +142,20 @@ public class Edit extends AppCompatActivity {
                 radioButtonCheck[2]=0;
             setRadioButton();
         }
-
-
-
-
-        getGlobalVariable();
-        //setNumber();
-
+        else{
+            getGlobalVariable();
+            setNumber();
+        }
 
         buttonOK.setOnClickListener(
                 new View.OnClickListener(){
                     @Override
                     public void onClick(View view) {
-
-/*
                         intent.setClass(Edit.this, MainActivity.class);
-                        checkRadioButton();
-                        //intent.putExtra("money",editTextMoney.getText().toString());
-                        //intent.putExtra("content",editTextContent.getText().toString());
-                        bundle.putIntArray("radioButtonCheck",radioButtonCheck);
-                        bundle.putString("content",editTextContent.getText().toString());
-                        bundle.putString("money",editTextMoney.getText().toString());
-                        bundle.putString("typeItem",typeItem);
-                        /*
-                        if(editData==false){
-                            intent.putExtras(bundle);
-                            setResult(RESULT_OK, intent);
-                        }
-                        else{
-                            bundle.putInt("layoutId",layoutId);
-                            intent.putExtras(bundle);
-                            setResult(3,intent);
-                        }
-*/
-
-                        intent.setClass(Edit.this, MainActivity.class);
+                        intent.putExtra("date",date);
                         setGlobalVariable();
                         sendData();
                         startActivity(intent);
-
                     }
                 });
 
@@ -238,19 +185,19 @@ public class Edit extends AppCompatActivity {
             income=1;
         else if(radioButtonCheck[0]==0&&radioButtonCheck[1]==1)
             income=0;
-        if(radioButtonCheck[2]==1&&radioButtonCheck[1]==0)
+        if(radioButtonCheck[2]==1)
             necessary=1;
         else if(radioButtonCheck[2]==0&&radioButtonCheck[3]==1)
             necessary=0;
 
-        //if(id==0){
-        long id = helper.insert(date,money,income,necessary,typeItem,content,frequencyItem);
-        Log.d("ADD", id+"");
-        intent.putExtra("ID",id);
-        //}
-        //else{
-        helper.update(id);
-        //}
+        if(id==0){
+            long id = helper.insert(date,money,income,necessary,typeItem,content,frequencyItem);
+            Log.d("ADD", id+"");
+            intent.putExtra("ID",id);
+        }
+        else{
+            helper.update(id,date,money,income,necessary,typeItem,content,frequencyItem);
+        }
 
     }
     //Set Radio Button
@@ -277,6 +224,9 @@ public class Edit extends AppCompatActivity {
             radioButtonNecessity.setVisibility(View.VISIBLE);
             radioButtonNonNecessity.setVisibility(View.VISIBLE);
         }
+        if(radioButtonCheck[0] == 1) radioButtonIncome.setChecked(true);
+        else radioButtonIncome.setChecked(false);
+        if(radioButtonCheck[1] == 1) radioButtonExpense.setChecked(true);
         else radioButtonExpense.setChecked(false);
         if(radioButtonCheck[2] == 1) radioButtonNecessity.setChecked(true);
         else radioButtonNecessity.setChecked(false);
@@ -295,7 +245,6 @@ public class Edit extends AppCompatActivity {
         gv.setTypeItem(typeItem);
         gv.setFrequencyItem(frequencyItem);
         gv.setLayoutId(layoutId);
-
     }
 
     public void getGlobalVariable(){
@@ -305,7 +254,6 @@ public class Edit extends AppCompatActivity {
         typeItem = gv.getTypeItem();
         frequencyItem = gv.getFrequencyItem();
         layoutId = gv.getLayoutId();
-
         date = gv.getDate();
     }
 
@@ -348,10 +296,7 @@ public class Edit extends AppCompatActivity {
 
                 new AlertDialog.Builder(Edit.this)
                         .setTitle("輸入新增項目:")//設定視窗標題
-                        //.setIcon(R.mipmap.ic_launcher)//設定對話視窗圖示
-                        //.setMessage("這是一個對話視窗")//設定顯示的文字
                         .setView(new_type)
-
                         .setNegativeButton("確定",new DialogInterface.OnClickListener(){
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -378,12 +323,10 @@ public class Edit extends AppCompatActivity {
                 //Toast.LENGTH_LONG).show();
 
             }
-
         }
 
         @Override
         public void onNothingSelected(AdapterView<?> parent) {
-
         }
     };
     //Write the type items to xml.

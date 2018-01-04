@@ -24,7 +24,6 @@
             android:id="@+id/buttonDate"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
-
             android:layout_marginTop="8dp"
             android:layout_weight="1"
             android:text="日曆" />
@@ -33,10 +32,11 @@
             android:id="@+id/date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0.5"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginTop="12dp"
+            android:layout_weight="0.5"
+            android:gravity="center"
             android:text="2017-12-19"
             android:textSize="30sp" />
 
@@ -44,7 +44,6 @@
             android:id="@+id/button2"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
-
             android:layout_marginTop="8dp"
             android:layout_weight="1"
             android:text="紀錄" />
@@ -53,7 +52,7 @@
 
     <CalendarView
         android:id="@+id/calendarView"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="350dp"
         android:layout_marginEnd="8dp"
         android:layout_marginLeft="8dp"
