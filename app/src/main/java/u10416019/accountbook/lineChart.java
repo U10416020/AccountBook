@@ -1,12 +1,15 @@
 package u10416019.accountbook;
 
 import android.app.Activity;
+import android.app.DatePickerDialog;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -17,8 +20,10 @@ import org.achartengine.model.XYMultipleSeriesDataset;
 import org.achartengine.model.XYSeries;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
+import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -38,28 +43,64 @@ public class lineChart extends Fragment {
     GraphicalView view;
     // 整個view
     int i = 5;
+
     LinearLayout linLayout;
+    TextView date;
+    final Calendar calendar = Calendar.getInstance();
+    SimpleDateFormat dateFormat= new SimpleDateFormat("yyyy");
+    private View v;
+    int getTotal[];
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.line_chart, container, false);
+        v=inflater.inflate(R.layout.line_chart, container, false);
+        date = (TextView) v.findViewById(R.id.date);
+        updateDate();
+        date.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new DatePickerDialog(v.getContext(),listener,calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+        return v;
     }
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         linLayout = (LinearLayout)this.getView().findViewById(R.id.linearLayout);
-        lineView();
+        setDateForLineChart();
+    }
+    private DatePickerDialog.OnDateSetListener listener = new DatePickerDialog.OnDateSetListener(){
+
+        @Override
+        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+            calendar.set(Calendar.YEAR,year);
+            calendar.set(Calendar.MONTH,month);
+            calendar.set(Calendar.DAY_OF_MONTH,dayOfMonth);
+            updateDate();
+            setDateForLineChart();
+        }
+    };
+
+    private void updateDate(){
+        date.setText(dateFormat.format(calendar.getTime()));
     }
 
-    public void lineView() {
+    public void setDateForLineChart(){
+        MyDataBase dataBase = MyDataBase.getInstance(v.getContext());
+        getTotal = dataBase.getMonthTotalOfYear(date.getText().toString());
+        lineView(getTotal);
+    }
+
+    public void lineView(int[] getTotal) {
+        linLayout.removeView(view);
         // 同樣是需要數據dataset和視圖渲染器renderer
         mDataset = new XYMultipleSeriesDataset();
-        series = new XYSeries("Frist");
-        series.add(1, 6);
-        series.add(2, 5);
-        series.add(3, 7);
-        series.add(4, 4);
-
+        series = new XYSeries("");
+        for(int i=0;i<12;i++){
+            series.add(i+1,getTotal[i]);
+        }
         mDataset.addSeries(series);
 
         mRenderer = new XYMultipleSeriesRenderer();
@@ -69,16 +110,16 @@ public class lineChart extends Fragment {
         mRenderer
                 .setOrientation(XYMultipleSeriesRenderer.Orientation.HORIZONTAL);
         // 設置圖表的X軸的當前方向
-        mRenderer.setXTitle("X軸");// 設置為X軸的標題
-        mRenderer.setYTitle("Y軸");// 設置y軸的標題
-        mRenderer.setAxisTitleTextSize(20);// 設置軸標題文本大小
+        mRenderer.setXTitle("月份");// 設置為X軸的標題
+        mRenderer.setYTitle("金額");// 設置y軸的標題
+        mRenderer.setAxisTitleTextSize(50);// 設置軸標題文本大小
         mRenderer.setChartTitle("ChartTest");// 設置圖表標題
         mRenderer.setChartTitleTextSize(30);// 設置圖表標題文字的大小
         mRenderer.setLabelsTextSize(50);// 設置標簽的文字大小
         mRenderer.setLegendTextSize(50);// 設置圖例文本大小
         mRenderer.setPointSize(20f);// 設置點的大小
         mRenderer.setYAxisMin(0);// 設置y軸最小值是0
-        mRenderer.setYAxisMax(15);
+        mRenderer.setYAxisMax(getMaxY(getTotal));
         mRenderer.setYLabels(10);// 設置Y軸刻度個數（貌似不太準確）
         mRenderer.setXAxisMin(0);
         mRenderer.setXAxisMax(5);//設置X軸坐標個數
@@ -87,13 +128,12 @@ public class lineChart extends Fragment {
         mRenderer.setXLabelsColor(getResources().getColor(R.color.colorAccent));
 
         // 將x標簽欄目顯示如：1,2,3,4替換為顯示1月，2月，3月，4月
-        mRenderer.addXTextLabel(1, "1月");
-        mRenderer.addXTextLabel(2, "2月");
-        mRenderer.addXTextLabel(3, "3月");
-        mRenderer.addXTextLabel(4, "4月");
+        for(int i =1;i<13;i++){
+            mRenderer.addXTextLabel(i,i+"月");
+        }
         mRenderer.setXLabels(0);// 設置只顯示如1月，2月等替換後的東西，不顯示1,2,3等
         //mRenderer.setMargins(new int[] { 20, 30, 15, 20 });// 設置視圖位置
-        mRenderer.setMargins(new int[] { 50, 50, 50, 50 });// 設置視圖位置
+        mRenderer.setMargins(new int[] { 50, 100, 50, 50 });// 設置視圖位置
         mRenderer.setPanEnabled(true, false);
         // 第一個參數設置X軸是否可滑動，第二個參數設置Y軸是夠可滑動
         r = new XYSeriesRenderer();
@@ -116,10 +156,13 @@ public class lineChart extends Fragment {
         //將畫好折線的view添加到xml中的一個布局裏
     }
 
-    private String nowtime() {
-        //求當前系統的時分秒
-        SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
-        return format.format(new Date());
-
+    public int getMaxY(int[] getTotal){
+        int maxY = 0;
+        for(int i=0;i<12;i++){
+            if(getTotal[i]>maxY)
+                maxY=getTotal[i];
+        }
+        return maxY+1000;
     }
+
 }

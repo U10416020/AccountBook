@@ -102,18 +102,17 @@ public class MyDataBase extends SQLiteOpenHelper {
 
     //Calculate the month total money and return the remainder
     public int getMonthTotal(String date){
-        Log.d("GETMONTHTOTAL","111");
+        Log.d("GETMONTHTOTAL","1111");
         int total=0;
         String[] tokens = date.split("-");
         int year = Integer.valueOf(tokens[0]);
         int month = Integer.valueOf(tokens[1])-1;
-        int day = Integer.valueOf(tokens[2]);
         final Calendar calendar = Calendar.getInstance();
 
         SimpleDateFormat dateFormat= new SimpleDateFormat("yyyy-MM-dd");
         calendar.set(year,month,1);
         String getFirstDay_of_Month = dateFormat.format(calendar.getTime());
-        Log.d("LastDay",getFirstDay_of_Month);
+        Log.d("FirstDay",getFirstDay_of_Month);
         calendar.add(Calendar.MONTH,1);
         calendar.add(Calendar.DAY_OF_MONTH,-1);
         String getLastDay_of_Month = dateFormat.format(calendar.getTime());
@@ -121,11 +120,10 @@ public class MyDataBase extends SQLiteOpenHelper {
 
         String cmd = "SELECT * FROM "+TABLE_NAME+" WHERE DATE >= \""+getFirstDay_of_Month+"\" and date <= \""+getLastDay_of_Month+"\" ;";
         Cursor result = database.rawQuery(cmd,null);
-        result.moveToFirst();
         if(result.moveToFirst()){
             do{
                 long id = result.getLong(0);
-
+                //String date1 = result.getString(1);
                 String money = result.getString(2);
                 int income = result.getInt(3);
                 int necessary = result.getInt(4);
@@ -138,6 +136,24 @@ public class MyDataBase extends SQLiteOpenHelper {
                     total-=Integer.valueOf(money);
             }while(result.moveToNext());
         }
+        Log.d("TOTAL",total+"");
         return total;
     }
+
+    public int[] getMonthTotalOfYear(String date){
+        int result[] = new int[12];
+        int year = Integer.valueOf(date);
+        int month = 1;
+        final Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat dateFormat= new SimpleDateFormat("yyyy-MM");
+
+        for(int i=0;i<12;i++){
+            calendar.set(year,i,1);
+            String sendDate = dateFormat.format(calendar.getTime());
+            result[i]=getMonthTotal(sendDate);
+        }
+        return result;
+    }
+
+
 }

@@ -50,7 +50,9 @@ public class MainActivity extends AppCompatActivity {
         linLay = (LinearLayout)findViewById(R.id.linLayout);
         btnadd.setOnClickListener(addView);
         date = (TextView)findViewById(R.id.date);
+
         intent=this.getIntent();
+
         if(intent.hasExtra("date")){
             date.setText(intent.getStringExtra("date"));
             gv.setDate(date.getText().toString());
@@ -112,11 +114,11 @@ public class MainActivity extends AppCompatActivity {
         String cmd = "SELECT * FROM "+TABLE_NAME+" WHERE DATE = \""+date.getText().toString()+"\";";
         Cursor result = db.rawQuery(cmd,null);
         result.moveToFirst();
-        String date="";
+        String dates="";
         if(result.moveToFirst()){
             do{
                 long id = result.getLong(0);
-                date = result.getString(1);
+                dates = result.getString(1);
                 String money = result.getString(2);
                 int income = result.getInt(3);
                 int necessary = result.getInt(4);
@@ -124,10 +126,10 @@ public class MainActivity extends AppCompatActivity {
                 String content = result.getString(6);
                 String frequency = result.getString(7);
                 linLay.addView(new addLinLayout(MainActivity.this,money,content,type,id,income,necessary,myDBHelper));
-                Log.d("ID",id+"+DATE="+date);
+                Log.d("ID",id+"+DATE="+dates);
             }while(result.moveToNext());
         }
-        int total = myDBHelper.getMonthTotal(date);
+        int total = myDBHelper.getMonthTotal(date.getText().toString());
         Log.d("TOTAL",total+"");
     }
 
